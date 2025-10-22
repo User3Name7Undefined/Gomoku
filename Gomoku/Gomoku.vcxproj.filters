@@ -18,9 +18,30 @@
     <ClInclude Include="Game.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
