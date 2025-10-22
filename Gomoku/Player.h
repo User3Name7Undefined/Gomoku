@@ -1,5 +1,5 @@
 #pragma once
-#include "Board.h"
+class Board;
 
 class Player {
 private:

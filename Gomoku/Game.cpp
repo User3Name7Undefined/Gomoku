@@ -1,3 +1,6 @@
+#include "Player.h"
+#include "AI.h"
+#include "Board.h"
 #include "Game.h"
 
 Game::Game(Player& p, AI& a, Board& b, PlayerType turn)
@@ -5,7 +8,7 @@ Game::Game(Player& p, AI& a, Board& b, PlayerType turn)
 }
 
 void Game::Start() {
-
+    board.Init();
 }
 
 void Game::Run() {

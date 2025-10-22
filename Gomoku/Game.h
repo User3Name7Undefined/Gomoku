@@ -1,7 +1,7 @@
 #pragma once
-#include "Board.h"
-#include "Player.h"
-#include "AI.h"
+class Board;
+class Player;
+class AI;
 
 enum PlayerType {
     kPlayer,
@@ -22,7 +22,7 @@ private:
     PlayerType turn;
     GameState state;
 public:
-    Game(Player& p, AI& a, Board& b, PlayerType turn);
+    Game(Player& _player, AI& _ai, Board& _b, PlayerType _turn);
     void Start();
     void Run();
     bool CheckEnd();

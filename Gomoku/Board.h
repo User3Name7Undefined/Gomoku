@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics.h"
+#include <vector>
 
 struct ChessPos {
     int row;
@@ -23,8 +24,10 @@ private:
     const int kMargin;
     const float kGridSize;
 
+	std::vector<std::vector<ChessType>> board_state;
 public:
 	Board(const int board_dimension, const int board_size, const int margin);
+    void Init();
     bool Click(int x, int y, ChessPos& pos);//if valid, return pos
     void ChessDown(const ChessPos& pos, ChessType type);
     ChessType get_chess_type(const ChessPos& pos);
