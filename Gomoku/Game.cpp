@@ -3,20 +3,22 @@
 #include "Board.h"
 #include "Game.h"
 
-Game::Game(Player& p, AI& a, Board& b, PlayerType turn)
+Game::Game(Player *p, AI *a, Board *b, PlayerType turn)
     : player(p), ai(a), board(b), turn(turn), state(kRunning){
 }
 
 void Game::Start() {
-    board.Init();
+    board->Init();
+	player->Init(board);
+	ai->Init(board);
 }
 
 void Game::Run() {
     while (1) {
         if (turn == kPlayer)
-            player.Move();
+            player->Move();
         else
-            ai.Move();
+            ai->Move();
 
         if (CheckEnd())break;
 
