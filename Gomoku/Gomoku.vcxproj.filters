@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="asset">
+      <UniqueIdentifier>{77799b12-4dc6-4f7f-85da-9b56a7d6a210}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -44,5 +47,72 @@
     <ClCompile Include="AI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="asset\bg.mp3">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\down7.wav">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\select.mp3">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\start.WAV">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\不错.mp3">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\胜利.mp3">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\失败.mp3">
+      <Filter>asset</Filter>
+    </Media>
+    <Media Include="asset\无效点击.mp3">
+      <Filter>asset</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="asset\black.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\black2.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\menu.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\red.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\rock.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\white.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\white2.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\棋盘.jpg">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\棋盘2.jpg">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\棋盘3.bmp">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\棋盘3.png">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\胜利.jpg">
+      <Filter>asset</Filter>
+    </Image>
+    <Image Include="asset\失败.jpg">
+      <Filter>asset</Filter>
+    </Image>
   </ItemGroup>
 </Project>

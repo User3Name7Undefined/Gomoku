@@ -135,6 +135,31 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="asset\bg.mp3" />
+    <Media Include="asset\down7.wav" />
+    <Media Include="asset\select.mp3" />
+    <Media Include="asset\start.WAV" />
+    <Media Include="asset\不错.mp3" />
+    <Media Include="asset\失败.mp3" />
+    <Media Include="asset\无效点击.mp3" />
+    <Media Include="asset\胜利.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="asset\black.png" />
+    <Image Include="asset\black2.png" />
+    <Image Include="asset\menu.png" />
+    <Image Include="asset\red.png" />
+    <Image Include="asset\rock.png" />
+    <Image Include="asset\white.png" />
+    <Image Include="asset\white2.png" />
+    <Image Include="asset\失败.jpg" />
+    <Image Include="asset\棋盘.jpg" />
+    <Image Include="asset\棋盘2.jpg" />
+    <Image Include="asset\棋盘3.bmp" />
+    <Image Include="asset\棋盘3.png" />
+    <Image Include="asset\胜利.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
