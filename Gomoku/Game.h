@@ -4,14 +4,14 @@
 #include "AI.h"
 
 enum PlayerType {
-    PLAYER = 1,
-    COMPUTER = 2
+    kPlayer,
+    kComputer
 };
 
 enum GameState {
-    RUNNING,
-    SOMEONE_WIN,
-    DRAW
+    kRunning,
+    kSomeoneWin,
+    kDraw
 };
 
 class Game {

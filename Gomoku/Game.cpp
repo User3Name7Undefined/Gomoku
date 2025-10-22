@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game(Player& p, AI& a, Board& b, PlayerType turn)
-    : player(p), ai(a), board(b), turn(turn) {
+    : player(p), ai(a), board(b), turn(turn), state(kRunning){
 }
 
 void Game::Start() {
@@ -10,17 +10,17 @@ void Game::Start() {
 
 void Game::Run() {
     while (1) {
-        if (turn == PLAYER)
+        if (turn == kPlayer)
             player.Move();
         else
             ai.Move();
 
         if (CheckEnd())break;
 
-        if (turn == PLAYER)
-            turn = COMPUTER;
+        if (turn == kPlayer)
+            turn = kComputer;
         else
-            turn = PLAYER;
+            turn = kPlayer;
     }
 }
 
@@ -30,10 +30,10 @@ bool Game::CheckEnd() {
 }
 
 void Game::End() {
-    if (state == SOMEONE_WIN) {
+    if (state == kSomeoneWin) {
         //announce winner
     }
-    else if (state == DRAW) {
+    else if (state == kDraw) {
         //announce draw
     }
 }
