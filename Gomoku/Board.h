@@ -1,6 +1,7 @@
 #pragma once
 #include "graphics.h"
 #include <vector>
+#include "TypeAliases.h"
 
 struct PiecePos {
     int row;
@@ -22,11 +23,11 @@ private:
     const int kBoardDimension;
     const int kBoardSize;
     const int kMargin;
-    const float kGridSize;
+    const double kGridSize;
 
     const int kPieceSize;
 
-	std::vector<std::vector<PieceType>> board_state;
+    vvector<PieceType> board_state;
 
     int grid_pixel_pos(int index);
 public:
@@ -36,4 +37,5 @@ public:
 
     void PlacePiece(const PiecePos *pos, PieceType type);
     PieceType get_piece_type(const PiecePos *pos);
+    vvector<PieceType> get_board_state();
 };

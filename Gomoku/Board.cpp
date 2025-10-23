@@ -19,18 +19,18 @@ void Board::Init() {
 	putimage(0, 0, &board_img);
 }
 
-static float distance(float x1, float y1, float x2, float y2) {
+static double distance(double x1, double y1, double x2, double y2) {
 	return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
 bool Board::Click(int x, int y, PiecePos *pos) {
-	static const float offset = kGridSize * 0.3;
+	static const double offset = kGridSize * 0.3;
 	int col = (x - kMargin) / kGridSize;
 	int row = (y - kMargin) / kGridSize;
 
 	auto CheckDis = [&](int _col, int _row) {
-		float pixel_x = kMargin + _col * kGridSize;
-		float pixel_y = kMargin + _row * kGridSize;
+		double pixel_x = kMargin + _col * kGridSize;
+		double pixel_y = kMargin + _row * kGridSize;
 		if (distance(x, y, pixel_x, pixel_y) <= offset) {
 			pos->col = _col;
 			pos->row = _row;
@@ -98,4 +98,8 @@ void Board::PlacePiece(const PiecePos *pos, PieceType type) {
 
 PieceType Board::get_piece_type(const PiecePos *pos) {
 	return board_state[pos->row][pos->col];
+}
+
+std::vector<std::vector<PieceType>> Board::get_board_state() {
+	return board_state;
 }
