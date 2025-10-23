@@ -1,9 +1,9 @@
 #include "Player.h"
 #include "Board.h"
 
-void Player::Init(Board *_board, PieceType _use_type) {
+void Player::Init(Board *_board, PieceType _self_type) {
 	board = _board;
-	use_type = _use_type;
+	self_type = _self_type;
 	Voice(kStartGame);
 }
 
@@ -15,7 +15,7 @@ void Player::Move() {
 		if (msg.message == WM_LBUTTONDOWN && board->Click(msg.x,msg.y,&pos)) {
 			if (board->get_piece_type(&pos) != kNoPiece)continue;
 
-			board->PlacePiece(&pos, use_type);
+			board->PlacePiece(&pos, self_type);
 			//Voice(kPlacePiece);
 			Voice(kStartGame);
 			break;

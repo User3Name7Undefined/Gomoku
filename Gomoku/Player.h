@@ -14,9 +14,9 @@ enum VoiceType {
 class Player {
 private:
     Board *board;
-    PieceType use_type;
+    PieceType self_type;
 public:
-    void Init(Board *_board, PieceType _use_type);
+    void Init(Board *_board, PieceType _self_type);
     void Move();
     void Voice(VoiceType voice);
 };

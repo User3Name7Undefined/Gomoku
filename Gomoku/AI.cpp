@@ -22,23 +22,23 @@ AI::AI(const int board_dimension):kBoardDimension(board_dimension),
 		{ { 2,0,1,1,1,0,2 }, kSleepingThree },
 		//six
 		{ { 0,1,1,1,1,0 }, kActiveFour },
-		{ { 0,1,1,1,1,2 }, kSleepingFour },
-		{ { 0,1,1,1,0,0 }, kActiveThree },
-		{ { 0,1,0,1,1,0 }, kActiveThree },
-		{ { 0,0,1,1,1,2 }, kSleepingThree },
-		{ { 0,1,0,1,1,2 }, kSleepingThree },
-		{ { 0,1,1,0,1,2 }, kSleepingThree },
+		{ { 0,1,1,1,1,2 }, kSleepingFour }, { { 2,1,1,1,1,0 }, kSleepingFour },
+		{ { 0,1,1,1,0,0 }, kActiveThree }, { { 0,0,1,1,1,0 }, kActiveThree },
+		{ { 0,1,0,1,1,0 }, kActiveThree }, { { 0,1,1,0,1,0 }, kActiveThree },
+		{ { 0,0,1,1,1,2 }, kSleepingThree }, { { 2,1,1,1,0,0 }, kSleepingThree },
+		{ { 0,1,0,1,1,2 }, kSleepingThree }, { { 2,1,1,0,1,0 }, kSleepingThree },
+		{ { 0,1,1,0,1,2 }, kSleepingThree }, { { 2,1,0,1,1,0 }, kSleepingThree },
 		{ { 0,0,1,1,0,0 }, kActiveTwo },
 		{ { 0,1,0,0,1,0 }, kActiveTwo },
-		{ { 0,0,1,0,1,2 }, kSleepingTwo },
-		{ { 0,1,0,0,1,2 }, kSleepingTwo },
+		{ { 0,0,1,0,1,2 }, kSleepingTwo }, { { 2,1,0,1,0,0 }, kSleepingTwo },
+		{ { 0,1,0,0,1,2 }, kSleepingTwo }, { { 2,1,0,0,1,0 }, kSleepingTwo },
 		//five
 		{ { 1,1,1,1,1 }, kFive },
-		{ { 1,0,1,1,1 }, kSleepingFour },
+		{ { 1,0,1,1,1 }, kSleepingFour }, { { 1,1,1,0,1 }, kSleepingFour },
 		{ { 1,1,0,1,1 }, kSleepingFour },
-		{ { 1,0,0,1,1 }, kSleepingThree }, 
+		{ { 1,0,0,1,1 }, kSleepingThree }, { { 1,1,0,0,1 }, kSleepingThree },
 		{ { 1,0,1,0,1 }, kSleepingThree },
-		{ { 1,1,0,0,1 }, kSleepingThree },
+		{ { 1,1,0,0,1 }, kSleepingThree }, { { 1,0,0,1,1 }, kSleepingThree },
 		{ { 0,1,0,1,0 }, kActiveTwo },
 		{ { 1,0,0,0,1 }, kSleepingTwo },
 	};
@@ -82,28 +82,36 @@ uint64_t AI::ZobristHash(const vvector<PieceType> *board_state) {
 }
 
 int AI::CheckSeven(vvector<PieceType> *board_state) {
-
+	return 0;
 }
 
 int AI::CheckSix(vvector<PieceType>* board_state) {
-
+	return 0;
 }
 
-int AI::CheckFive(vvector<PieceType>* board_state) {
-	//horizontal
-	for(int i=0;i<kBoardDimension;++i){
-		for(int j=-1;j+5-1<=kBoardDimension;++j){
-			
-		}
-	}
-	//vertical
-
-	//diagonal
+int AI::CheckFive(vector<PieceType> *seq) {
+	return 0;
 }
 
 int AI::Evaluate(const vvector<PieceType> *board_state) {
 	uint64_t hash = ZobristHash(board_state);
 	if (transposition_table.count(hash))return transposition_table[hash];
+	double self_score = 0;
+	double oppo_score = 0;
+	PieceType oppo_type = (self_type == kBlackPiece) ? kWhitePiece : kBlackPiece;
+
+	//horizontal
+	for (int i = 0; i < kBoardDimension; ++i) {
+		vector<PieceType> seq;
+		for(int l=-1,r;;++l){
+			for (int len = 5; len <= 7; ++len) {
+				seq.
+			}
+		}
+	}
+	//vertical
+
+	//diagonal
 
 	return 0;
 }
@@ -112,9 +120,9 @@ void AI::AlphaBeta() {
 
 }
 
-void AI::Init(Board *_board, PieceType _use_type) {
+void AI::Init(Board *_board, PieceType _self_type) {
 	board = _board;
-	use_type = _use_type;
+	self_type = _self_type;
 }
 
 void AI::Move() {
@@ -124,7 +132,7 @@ void AI::Move() {
 	while (true) {
 		pos = { dist_int(generator),dist_int(generator) };
 		if (board->get_piece_type(&pos) != kNoPiece)continue;
-		board->PlacePiece(&pos, use_type);
+		board->PlacePiece(&pos, self_type);
 		break;
 	}
 }

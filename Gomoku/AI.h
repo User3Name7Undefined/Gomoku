@@ -12,7 +12,7 @@ enum PieceType;
 class AI {
 private:
     Board* board;
-    PieceType use_type;
+    PieceType self_type;
     
     const int kBoardDimension;
 
@@ -26,7 +26,7 @@ private:
     std::map<vector<int>, int> shape_score;
     int CheckSeven(vvector<PieceType> *board_state);
     int CheckSix(vvector<PieceType> *board_state);
-    int CheckFive(vvector<PieceType> *board_state);
+    int CheckFive(vector<PieceType>* seq);
     int Evaluate(const vvector<PieceType> *board_state);
     std::map<uint64_t, int> transposition_table;
 
@@ -35,6 +35,6 @@ private:
 
 public:
     AI(const int _board_dimension);
-    void Init(Board *_board, PieceType _use_type);
+    void Init(Board *_board, PieceType _self_type);
     void Move();
 };
