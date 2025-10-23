@@ -100,6 +100,12 @@ PieceType Board::get_piece_type(const PiecePos *pos) {
 	return board_state[pos->row][pos->col];
 }
 
-std::vector<std::vector<PieceType>> Board::get_board_state() {
+vvector<PieceType> Board::get_board_state() {
 	return board_state;
+}
+
+void Board::DebugCircle(int col, int row) {
+	int pixel_x = kMargin + col * kGridSize;
+	int pixel_y = kMargin + row * kGridSize;
+	circle(pixel_x, pixel_y, 5);
 }

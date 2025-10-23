@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <deque>
 #include <array>
 #include <random>
 
@@ -23,12 +24,13 @@ private:
     const vvvector<uint64_t> zobrist_table;
     uint64_t ZobristHash(const vvector<PieceType>* board_state);
 
-    std::map<vector<int>, int> shape_score;
-    int CheckSeven(vvector<PieceType> *board_state);
-    int CheckSix(vvector<PieceType> *board_state);
-    int CheckFive(vector<PieceType>* seq);
-    int Evaluate(const vvector<PieceType> *board_state);
-    std::map<uint64_t, int> transposition_table;
+    std::map<std::deque<int>, int> shape_score;
+    int CheckSeven(const std::deque<int> *seq);
+    int CheckSix(const std::deque<int> *seq);
+    int CheckFive(const std::deque<int> *seq);
+    int EvaluateForType(const vvector<PieceType>* board_state, PieceType type);
+    double Evaluate(const vvector<PieceType> *board_state);
+    std::map<uint64_t, double> transposition_table;
 
     std::vector<std::vector<PieceType>>sim_board_state;
     void AlphaBeta();

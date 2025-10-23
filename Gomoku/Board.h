@@ -38,4 +38,6 @@ public:
     void PlacePiece(const PiecePos *pos, PieceType type);
     PieceType get_piece_type(const PiecePos *pos);
     vvector<PieceType> get_board_state();
+
+    void DebugCircle(int col, int row);
 };
