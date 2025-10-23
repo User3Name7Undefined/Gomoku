@@ -28,9 +28,8 @@ private:
     int CheckSeven(const std::deque<int> *seq);
     int CheckSix(const std::deque<int> *seq);
     int CheckFive(const std::deque<int> *seq);
-    int EvaluateForType(const vvector<PieceType>* board_state, PieceType type);
-    double Evaluate(const vvector<PieceType> *board_state);
-    std::map<uint64_t, double> transposition_table;
+    int Evaluate(const vvector<PieceType>* board_state, PieceType type);
+    std::map<uint64_t, int> transposition_table[2];
 
     std::vector<std::vector<PieceType>>sim_board_state;
     void AlphaBeta();

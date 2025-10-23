@@ -94,8 +94,36 @@ int AI::CheckFive(const std::deque<int> *seq) {
 	return 0;
 }
 
-int AI::EvaluateForType(const vvector<PieceType>* board_state, PieceType type) {
+int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
+	uint64_t hash = ZobristHash(board_state);
+	if (transposition_table[type].count(hash))return transposition_table[type][hash];
+
 	int score = 0;
+	auto convert = [&](PieceType p) {
+		if (p == kNoPiece)return 0;
+		else return p == type ? 1 : 2;
+		};
+	auto Push = [&](std::deque<int>* seq, int x, int y) {
+		if (x == -1 || y == -1 || x == kBoardDimension || y == kBoardDimension)
+			seq->push_back(2);
+		else seq->push_back(convert((*board_state)[x][y]));
+		};
+	auto Check = [&](std::deque<int>* seq, int len) {
+		switch (len) {
+		case 5:
+			score += CheckFive(seq);
+			score += CheckFive(seq);
+			break;
+		case 6:
+			score += CheckSix(seq);
+			score += CheckSix(seq);
+			break;
+		case 7:
+			score += CheckSeven(seq);
+			score += CheckSeven(seq);
+			break;
+		}
+		};
 
 	//horizontal and vertical
 	for (int i = 0; i < kBoardDimension; ++i) {
@@ -103,38 +131,17 @@ int AI::EvaluateForType(const vvector<PieceType>* board_state, PieceType type) {
 			std::deque<int> seq_h;
 			std::deque<int> seq_v;
 			for (p = -1; p <= kBoardDimension; ++p) {
-				if (p == -1 || p == kBoardDimension) {
-					/*seq_h.push_back(2);
-					seq_v.push_back(2);*/
-					seq_h.push_back(p);
-					seq_v.push_back(p);
-				}
-				else {
-					seq_h.push_back(p);
-					seq_v.push_back(p);
-					/*if ((*board_state)[i][p] == kNoPiece) seq_h.push_back(0);
-					else seq_h.push_back(((*board_state)[i][p] == type) ? 1 : 2);*/
-					/*if ((*board_state)[p][i] == kNoPiece) seq_v.push_back(0);
-					else seq_v.push_back(((*board_state)[p][i] == type) ? 1 : 2);*/
-				}
-				if (p >= len - 1) {
+				Push(&seq_h, i, p);
+				Push(&seq_v, p, i);
+
+				if (seq_h.size()>len) {
 					seq_h.pop_front();
 					seq_v.pop_front();
 				}
-				if (p < len - 2)continue;
-				/*for (auto& x : seq_h) {
-					board->DebugCircle(i, x);
-				}
-				for (auto& x : seq_v) {
-					board->DebugCircle(x, i);
-				}
-				Sleep(50);
-				cleardevice();*/
-				switch (len) {
-				case 5: score += CheckFive(&seq_h); CheckFive(&seq_v); break;
-				case 6: score += CheckSix(&seq_h); CheckSix(&seq_v); break;
-				case 7: score += CheckSeven(&seq_h); CheckSeven(&seq_v);  break;
-				}
+				if (seq_h.size() < len)continue;
+
+				Check(&seq_h, len);
+				Check(&seq_v, len);
 			}
 		}
 	}
@@ -146,18 +153,11 @@ int AI::EvaluateForType(const vvector<PieceType>* board_state, PieceType type) {
 
 	for (int len = 5; len <= 7; ++len) {
 		for (auto &pair : edge) {
-			printf("%d %d\n", pair.first, pair.second);
-			std::deque<std::pair<int, int>>seq_main;
-			std::deque<std::pair<int, int>>seq_anti;
+			std::deque<int>seq_main;
+			std::deque<int>seq_anti;
 			for (int x = pair.first, y = pair.second; max(x, y) <= kBoardDimension; ++x, ++y) {
-				if (x == -1 || y == -1 || x == kBoardDimension || y == kBoardDimension) {
-					seq_main.push_back({ x,y });
-					seq_anti.push_back({ kBoardDimension - 1 - x,y });
-				}
-				else {
-					seq_main.push_back({ x,y });
-					seq_anti.push_back({ kBoardDimension - 1 - x,y });
-				}
+				Push(&seq_main, x, y);
+				Push(&seq_anti, kBoardDimension - 1 - x, y);
 
 				if (seq_main.size() > len) {
 					seq_main.pop_front();
@@ -165,35 +165,13 @@ int AI::EvaluateForType(const vvector<PieceType>* board_state, PieceType type) {
 				}
 				if (seq_main.size() < len)continue;
 
-				for (auto& pair : seq_main) {
-					int a = pair.first;
-					int b = pair.second;
-					board->DebugCircle(a, b);
-				}
-				for (auto& pair : seq_anti) {
-					int a = pair.first;
-					int b = pair.second;
-					board->DebugCircle(a, b);
-				}
-				Sleep(10);
-				cleardevice();
+				Check(&seq_main, len);
+				Check(&seq_anti, len);
 			}
 		}
 	}
-	return 0;
-}
 
-double AI::Evaluate(const vvector<PieceType> *board_state) {
-	static double self_weight = 1.0;
-	static double oppo_weight = 1.0;
-
-	uint64_t hash = ZobristHash(board_state);
-	if (transposition_table.count(hash))return transposition_table[hash];
-	
-	PieceType oppo_type = (self_type == kBlackPiece) ? kWhitePiece : kBlackPiece;
-
-	return EvaluateForType(board_state, self_type) * self_weight
-		- EvaluateForType(board_state, oppo_type) * oppo_weight;
+	return (transposition_table[type][hash] = score);
 }
 
 void AI::AlphaBeta() {
@@ -211,7 +189,8 @@ void AI::Move() {
 	PiecePos pos;
 	while (true) {
 		sim_board_state = board->get_board_state();
-		EvaluateForType(&sim_board_state,kWhitePiece);
+		Evaluate(&sim_board_state,kWhitePiece);
+		Evaluate(&sim_board_state, kBlackPiece);
 		pos = { dist_int(generator),dist_int(generator) };
 		if (board->get_piece_type(&pos) != kNoPiece)continue;
 		board->PlacePiece(&pos, self_type);
