@@ -13,7 +13,8 @@ void Player::Move() {
 		getmessage(&msg, EX_MOUSE);
 		if (msg.message == WM_LBUTTONDOWN && board->Click(msg.x,msg.y,&pos)) {
 			board->ChessDown(&pos, use_type);
-			Voice(kPlaceChess);
+			//Voice(kPlaceChess);
+			Voice(kStartGame);
 			break;
 		}
 	}
