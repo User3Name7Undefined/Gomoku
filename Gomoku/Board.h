@@ -33,6 +33,7 @@ public:
 	Board(const int board_dimension, const int board_size, const int margin, const int piece_size);
     void Init();
     bool Click(int x, int y, PiecePos *pos);//if valid, return pos
+
     void PlacePiece(const PiecePos *pos, PieceType type);
     PieceType get_piece_type(const PiecePos *pos);
 };

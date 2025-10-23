@@ -13,6 +13,8 @@ void Player::Move() {
 	while(true){
 		getmessage(&msg, EX_MOUSE);
 		if (msg.message == WM_LBUTTONDOWN && board->Click(msg.x,msg.y,&pos)) {
+			if (board->get_piece_type(&pos) != kNoPiece)continue;
+
 			board->PlacePiece(&pos, use_type);
 			//Voice(kPlacePiece);
 			Voice(kStartGame);

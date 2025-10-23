@@ -95,3 +95,7 @@ void Board::PlacePiece(const PiecePos *pos, PieceType type) {
 		putimagePNG(x, y, &black_piece_img);
 	}
 }
+
+PieceType Board::get_piece_type(const PiecePos *pos) {
+	return board_state[pos->row][pos->col];
+}
