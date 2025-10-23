@@ -2,11 +2,11 @@
 #include "graphics.h"
 
 class Board;
-enum ChessType;
+enum PieceType;
 
 enum VoiceType {
 	kStartGame,
-    kPlaceChess,
+    kPlacePiece,
     kWin,
     kLose
 };
@@ -14,9 +14,9 @@ enum VoiceType {
 class Player {
 private:
     Board *board;
-    ChessType use_type;
+    PieceType use_type;
 public:
-    void Init(Board *_board);
+    void Init(Board *_board, PieceType _use_type);
     void Move();
     void Voice(VoiceType voice);
 };

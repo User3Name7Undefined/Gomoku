@@ -2,33 +2,37 @@
 #include "graphics.h"
 #include <vector>
 
-struct ChessPos {
+struct PiecePos {
     int row;
     int col;
 };
 
-enum ChessType {
-    kWhiteChess,
-    kBlackCHess,
-	kNoChess
+enum PieceType {
+    kWhitePiece,
+    kBlackPiece,
+	kNoPiece
 };
 
 class Board {
 private:
 	IMAGE board_img;
-	IMAGE white_chess_img;
-	IMAGE black_chess_img;
+	IMAGE white_piece_img;
+	IMAGE black_piece_img;
 
     const int kBoardDimension;
     const int kBoardSize;
     const int kMargin;
     const float kGridSize;
 
-	std::vector<std::vector<ChessType>> board_state;
+    const int kPieceSize;
+
+	std::vector<std::vector<PieceType>> board_state;
+
+    int grid_pixel_pos(int index);
 public:
-	Board(const int board_dimension, const int board_size, const int margin);
+	Board(const int board_dimension, const int board_size, const int margin, const int piece_size);
     void Init();
-    bool Click(int x, int y, ChessPos *pos);//if valid, return pos
-    void ChessDown(const ChessPos *pos, ChessType type);
-    ChessType get_chess_type(const ChessPos *pos);
+    bool Click(int x, int y, PiecePos *pos);//if valid, return pos
+    void PlacePiece(const PiecePos *pos, PieceType type);
+    PieceType get_piece_type(const PiecePos *pos);
 };

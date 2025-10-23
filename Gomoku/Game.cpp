@@ -9,13 +9,13 @@ Game::Game(Player *p, AI *a, Board *b, PlayerType turn)
 
 void Game::Start() {
     board->Init();
-	player->Init(board);
-	ai->Init(board);
+	player->Init(board, turn == kPlayer?kBlackPiece : kWhitePiece);
+	ai->Init(board, turn == kComputer?kBlackPiece : kWhitePiece);
 }
 
 void Game::Run() {
     while (1) {
-		//printf("Turn: %s\n", turn == kPlayer ? "Player" : "Computer");
+		printf("Turn: %s\n", turn == kPlayer ? "Player" : "Computer");
         if (turn == kPlayer)
             player->Move();
         else

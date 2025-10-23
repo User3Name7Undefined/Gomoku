@@ -1,12 +1,12 @@
 #pragma once
 class Board;
-enum ChessType;
+enum PieceType;
 
 class AI {
 private:
     Board* board;
-    ChessType use_type;
+    PieceType use_type;
 public:
-    void Init(Board *_board);
+    void Init(Board *_board, PieceType _use_type);
     void Move();
 };

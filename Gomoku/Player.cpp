@@ -1,19 +1,20 @@
 #include "Player.h"
 #include "Board.h"
 
-void Player::Init(Board *_board) {
-	Voice(kStartGame);
+void Player::Init(Board *_board, PieceType _use_type) {
 	board = _board;
+	use_type = _use_type;
+	Voice(kStartGame);
 }
 
 void Player::Move() {
 	ExMessage msg;
-	ChessPos pos;
+	PiecePos pos;
 	while(true){
 		getmessage(&msg, EX_MOUSE);
 		if (msg.message == WM_LBUTTONDOWN && board->Click(msg.x,msg.y,&pos)) {
-			board->ChessDown(&pos, use_type);
-			//Voice(kPlaceChess);
+			board->PlacePiece(&pos, use_type);
+			//Voice(kPlacePiece);
 			Voice(kStartGame);
 			break;
 		}
