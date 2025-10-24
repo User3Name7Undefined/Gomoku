@@ -23,7 +23,7 @@ static double distance(double x1, double y1, double x2, double y2) {
 	return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-bool Board::Click(int x, int y, PiecePos *pos) {
+bool Board::Click(int x, int y, GridPos *pos) {
 	static const double offset = kGridSize * 0.3;
 	int col = (x - kMargin) / kGridSize;
 	int row = (y - kMargin) / kGridSize;
@@ -84,7 +84,7 @@ static void putimagePNG(int x, int y, IMAGE* picture){
 	}
 }
 
-void Board::PlacePiece(const PiecePos *pos, PieceType type) {
+void Board::PlacePiece(const GridPos *pos, PieceType type) {
 	board_state[pos->row][pos->col] = type;
 	int x = grid_pixel_pos(pos->col) - kPieceSize / 2;
 	int y = grid_pixel_pos(pos->row) - kPieceSize / 2;
@@ -96,7 +96,7 @@ void Board::PlacePiece(const PiecePos *pos, PieceType type) {
 	}
 }
 
-PieceType Board::get_piece_type(const PiecePos *pos) {
+PieceType Board::get_piece_type(const GridPos *pos) {
 	return board_state[pos->row][pos->col];
 }
 

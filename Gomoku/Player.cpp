@@ -9,7 +9,7 @@ void Player::Init(Board *_board, PieceType _self_type) {
 
 void Player::Move() {
 	ExMessage msg;
-	PiecePos pos;
+	GridPos pos;
 	while(true){
 		getmessage(&msg, EX_MOUSE);
 		if (msg.message == WM_LBUTTONDOWN && board->Click(msg.x,msg.y,&pos)) {

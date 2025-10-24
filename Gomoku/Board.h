@@ -3,7 +3,7 @@
 #include <vector>
 #include "TypeAliases.h"
 
-struct PiecePos {
+struct GridPos {
     int row;
     int col;
 };
@@ -33,10 +33,10 @@ private:
 public:
 	Board(const int board_dimension, const int board_size, const int margin, const int piece_size);
     void Init();
-    bool Click(int x, int y, PiecePos *pos);//if valid, return pos
+    bool Click(int x, int y, GridPos *pos);//if valid, return pos
 
-    void PlacePiece(const PiecePos *pos, PieceType type);
-    PieceType get_piece_type(const PiecePos *pos);
+    void PlacePiece(const GridPos *pos, PieceType type);
+    PieceType get_piece_type(const GridPos *pos);
     vvector<PieceType> get_board_state();
 
     void DebugCircle(int col, int row);

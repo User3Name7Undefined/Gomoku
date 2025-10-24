@@ -6,43 +6,38 @@
 #include "AI.h"
 #include "Board.h"
 
-enum Shape {
-	kFive = 50,
-	kActiveFour = 27,
-	kSleepingFour = 8,
-	kActiveThree = 9,
-	kSleepingThree = 4,
-	kActiveTwo = 3,
-	kSleepingTwo = 2,
+#define INF 998244353
+
+const std::map<std::deque<int>, int> AI::shape_score = {
+	//seven
+	{ { 2,0,1,1,1,0,2 }, kSleepingThree },
+	{ { 2,0,1,1,1,0,0 }, kActiveThree }, { {0,0,1,1,1,0,2}, kActiveThree},
+	{ { 0,0,1,1,1,0,0 }, kActiveThree },
+	//six
+	{ { 0,1,1,1,1,0 }, kActiveFour },
+	{ { 0,1,1,1,1,2 }, kSleepingFour }, { { 2,1,1,1,1,0 }, kSleepingFour },
+	{ { 0,1,0,1,1,0 }, kActiveThree }, { { 0,1,1,0,1,0 }, kActiveThree },
+	{ { 0,0,1,1,1,2 }, kSleepingThree }, { { 2,1,1,1,0,0 }, kSleepingThree },
+	{ { 0,1,0,1,1,2 }, kSleepingThree }, { { 2,1,1,0,1,0 }, kSleepingThree },
+	{ { 0,1,1,0,1,2 }, kSleepingThree }, { { 2,1,0,1,1,0 }, kSleepingThree },
+	{ { 0,0,1,1,0,0 }, kActiveTwo },
+	{ { 0,1,0,0,1,0 }, kActiveTwo },
+	{ { 0,0,1,0,1,2 }, kSleepingTwo }, { { 2,1,0,1,0,0 }, kSleepingTwo },
+	{ { 0,1,0,0,1,2 }, kSleepingTwo }, { { 2,1,0,0,1,0 }, kSleepingTwo },
+	//five
+	{ { 1,1,1,1,1 }, kFive },
+	{ { 1,0,1,1,1 }, kSleepingFour }, { { 1,1,1,0,1 }, kSleepingFour },
+	{ { 1,1,0,1,1 }, kSleepingFour },
+	{ { 1,0,0,1,1 }, kSleepingThree }, { { 1,1,0,0,1 }, kSleepingThree },
+	{ { 1,0,1,0,1 }, kSleepingThree },
+	{ { 1,1,0,0,1 }, kSleepingThree }, { { 1,0,0,1,1 }, kSleepingThree },
+	{ { 0,1,0,1,0 }, kActiveTwo },
+	{ { 1,0,0,0,1 }, kSleepingTwo },
 };
 
-AI::AI(const int board_dimension):kBoardDimension(board_dimension),
-	generator(GenerateRandomGenerator()), zobrist_table(GenerateZobristTable(board_dimension, generator)) {
-	shape_score = {
-		//seven
-		{ { 2,0,1,1,1,0,2 }, kSleepingThree },
-		//six
-		{ { 0,1,1,1,1,0 }, kActiveFour },
-		{ { 0,1,1,1,1,2 }, kSleepingFour }, { { 2,1,1,1,1,0 }, kSleepingFour },
-		{ { 0,1,1,1,0,0 }, kActiveThree }, { { 0,0,1,1,1,0 }, kActiveThree },
-		{ { 0,1,0,1,1,0 }, kActiveThree }, { { 0,1,1,0,1,0 }, kActiveThree },
-		{ { 0,0,1,1,1,2 }, kSleepingThree }, { { 2,1,1,1,0,0 }, kSleepingThree },
-		{ { 0,1,0,1,1,2 }, kSleepingThree }, { { 2,1,1,0,1,0 }, kSleepingThree },
-		{ { 0,1,1,0,1,2 }, kSleepingThree }, { { 2,1,0,1,1,0 }, kSleepingThree },
-		{ { 0,0,1,1,0,0 }, kActiveTwo },
-		{ { 0,1,0,0,1,0 }, kActiveTwo },
-		{ { 0,0,1,0,1,2 }, kSleepingTwo }, { { 2,1,0,1,0,0 }, kSleepingTwo },
-		{ { 0,1,0,0,1,2 }, kSleepingTwo }, { { 2,1,0,0,1,0 }, kSleepingTwo },
-		//five
-		{ { 1,1,1,1,1 }, kFive },
-		{ { 1,0,1,1,1 }, kSleepingFour }, { { 1,1,1,0,1 }, kSleepingFour },
-		{ { 1,1,0,1,1 }, kSleepingFour },
-		{ { 1,0,0,1,1 }, kSleepingThree }, { { 1,1,0,0,1 }, kSleepingThree },
-		{ { 1,0,1,0,1 }, kSleepingThree },
-		{ { 1,1,0,0,1 }, kSleepingThree }, { { 1,0,0,1,1 }, kSleepingThree },
-		{ { 0,1,0,1,0 }, kActiveTwo },
-		{ { 1,0,0,0,1 }, kSleepingTwo },
-	};
+AI::AI(const int board_dimension, const int search_depth) :kBoardDimension(board_dimension), kSearchDepth(search_depth),
+generator(GenerateRandomGenerator()), zobrist_table(GenerateZobristTable(board_dimension, generator)) {
+	
 }
 
 std::mt19937_64 AI::GenerateRandomGenerator() {
@@ -71,10 +66,10 @@ vvvector<uint64_t> AI::GenerateZobristTable(const int board_dimension, std::mt19
 	return table;
 }
 
-uint64_t AI::ZobristHash(const vvector<PieceType> *board_state) {
+uint64_t AI::ZobristHash(const vvector<PieceType>* board_state) {
 	uint64_t hash = 0;
 	for (int i = 0; i < kBoardDimension; ++i) {
-		for(int j = 0; j < kBoardDimension; ++j){
+		for (int j = 0; j < kBoardDimension; ++j) {
 			PieceType type = (*board_state)[i][j];
 			hash ^= zobrist_table[i][j][type];
 		}
@@ -82,19 +77,24 @@ uint64_t AI::ZobristHash(const vvector<PieceType> *board_state) {
 	return hash;
 }
 
-int AI::CheckSeven(const std::deque<int> *seq) {
+int AI::CheckSeven(const std::deque<int>* seq) {
+	if (shape_score.count(*seq))return shape_score.at(*seq);
+	else return 0;
+}
+
+int AI::CheckSix(const std::deque<int>* seq) {
+	if (shape_score.count(*seq))return shape_score.at(*seq);
 	return 0;
 }
 
-int AI::CheckSix(const std::deque<int> *seq) {
-	return 0;
-}
-
-int AI::CheckFive(const std::deque<int> *seq) {
+int AI::CheckFive(const std::deque<int>* seq) {
+	if (shape_score.count(*seq))return shape_score.at(*seq);
 	return 0;
 }
 
 int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
+	//Regard type as self type, evaluate the score.
+
 	uint64_t hash = ZobristHash(board_state);
 	if (transposition_table[type].count(hash))return transposition_table[type][hash];
 
@@ -105,21 +105,18 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 		};
 	auto Push = [&](std::deque<int>* seq, int x, int y) {
 		if (x == -1 || y == -1 || x == kBoardDimension || y == kBoardDimension)
-			seq->push_back(2);
+			seq->push_back(2);//Out of board, regard it as opposite.
 		else seq->push_back(convert((*board_state)[x][y]));
 		};
-	auto Check = [&](std::deque<int>* seq, int len) {
+	auto Check = [&](std::deque<int> *seq, int len) {
 		switch (len) {
 		case 5:
-			score += CheckFive(seq);
 			score += CheckFive(seq);
 			break;
 		case 6:
 			score += CheckSix(seq);
-			score += CheckSix(seq);
 			break;
 		case 7:
-			score += CheckSeven(seq);
 			score += CheckSeven(seq);
 			break;
 		}
@@ -134,7 +131,7 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 				Push(&seq_h, i, p);
 				Push(&seq_v, p, i);
 
-				if (seq_h.size()>len) {
+				if (seq_h.size() > len) {
 					seq_h.pop_front();
 					seq_v.pop_front();
 				}
@@ -151,8 +148,8 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 	for (int row = kBoardDimension, col = -1; row >= -1; --row)edge.push_back({ row,col });
 	for (int row = -1, col = 0; col <= kBoardDimension; ++col) edge.push_back({ row,col });
 
-	for (int len = 5; len <= 7; ++len) {
-		for (auto &pair : edge) {
+	for (auto& pair : edge) {
+		for (int len = 5; len <= 7; ++len) {
 			std::deque<int>seq_main;
 			std::deque<int>seq_anti;
 			for (int x = pair.first, y = pair.second; max(x, y) <= kBoardDimension; ++x, ++y) {
@@ -174,11 +171,72 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 	return (transposition_table[type][hash] = score);
 }
 
-void AI::AlphaBeta() {
+double AI::AlphaBeta(PieceType type, double limit, int depth, GridPos* chosen_pos) {// kBlackPiece->max kWhitePiece->min
+	//If depth exceed the limit, return.
+	if (depth > kSearchDepth) {
+		double ret;
+		if (self_type == kBlackPiece)
+			ret = Evaluate(&sim_board_state, kBlackPiece) -
+			Evaluate(&sim_board_state, kWhitePiece) * defense_Preference;
+		else
+			ret = Evaluate(&sim_board_state, kBlackPiece) * defense_Preference -
+			Evaluate(&sim_board_state, kWhitePiece);
 
+		return ret;
+	}
+
+	//Find out candidate points.
+	vector<std::pair<int, int>> candidate_points;
+	for (int i = 0; i < kBoardDimension; ++i) {
+		for (int j = 0; j < kBoardDimension; ++j) {
+			if (sim_board_state[i][j] != kNoPiece)continue;
+			int x = i - 4, y = j - 4;
+			x = max(x, 0); y = max(y, 0);
+			bool flag = false;
+			for (; x < kBoardDimension; ++x) {
+				for (; y < kBoardDimension; ++y) {
+					if (sim_board_state[i][j] != kNoPiece) {
+						flag = true;
+					} if (flag)break;
+				} if (flag)break;
+			}
+			if (flag) {
+				candidate_points.push_back({ i,j });
+			}
+		}
+	}
+
+	double this_limit = type == kBlackPiece ? -INF : INF;
+
+	for (auto& point : candidate_points) {
+		int row = point.first;
+		int col = point.second;
+		sim_board_state[row][col] = type;
+		double ans = AlphaBeta(type == kBlackPiece ? kWhitePiece : kBlackPiece, this_limit, depth + 1, chosen_pos);
+		sim_board_state[row][col] = kNoPiece;
+
+		if (type == kBlackPiece) {//Max point.
+			if (this_limit < ans) {
+				this_limit = ans;
+				chosen_pos->row = row;
+				chosen_pos->col = col;
+			}
+			if (this_limit > limit) return this_limit;
+		}
+		else if (type == kWhitePiece) {//Min point.
+			if (this_limit > ans) {
+				this_limit = ans;
+				chosen_pos->row = row;
+				chosen_pos->col = col;
+			}
+			if (this_limit < limit) return this_limit;
+		}
+	}
+
+	return this_limit;
 }
 
-void AI::Init(Board *_board, PieceType _self_type) {
+void AI::Init(Board* _board, PieceType _self_type) {
 	board = _board;
 	self_type = _self_type;
 }
@@ -186,11 +244,12 @@ void AI::Init(Board *_board, PieceType _self_type) {
 void AI::Move() {
 	std::uniform_int_distribution<> dist_int(0, 12);
 
-	PiecePos pos;
+	GridPos pos;
 	while (true) {
 		sim_board_state = board->get_board_state();
-		Evaluate(&sim_board_state,kWhitePiece);
-		Evaluate(&sim_board_state, kBlackPiece);
+		printf("Evaluate score for black is %d\n", Evaluate(&sim_board_state, kBlackPiece));
+		printf("Evaluate score for white is %d\n", Evaluate(&sim_board_state, kWhitePiece));
+
 		pos = { dist_int(generator),dist_int(generator) };
 		if (board->get_piece_type(&pos) != kNoPiece)continue;
 		board->PlacePiece(&pos, self_type);
