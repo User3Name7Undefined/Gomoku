@@ -172,7 +172,7 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 	return (transposition_table[type][hash] = score);
 }
 
-double AI::AlphaBeta(PieceType type, double limit, int depth, GridPos* chosen_pos) {// kBlackPiece->max kWhitePiece->min
+double AI::AlphaBeta(PieceType type, double limit, int depth, GridPos* chosen_pos) {	//kBlackPiece->max kWhitePiece->min
 	//If depth exceed the limit, return.
 	if (depth > kSearchDepth) {
 		double ret;
@@ -188,49 +188,65 @@ double AI::AlphaBeta(PieceType type, double limit, int depth, GridPos* chosen_po
 
 	//Find out candidate points.
 	vector<std::pair<int, int>> candidate_points;
+	vvector<int>prefix(kBoardDimension, vector<int>(kBoardDimension, 0));
+	for (int i = 0; i < kBoardDimension; ++i) {
+		for (int j = 0; j < kBoardDimension; ++j) {
+			if (i > 0)prefix[i][j] += prefix[i - 1][j];
+			if (j > 0)prefix[i][j] += prefix[i][j - 1];
+			if (i > 0 && j > 0)prefix[i][j] -= prefix[i - 1][j - 1];
+			prefix[i][j] += ((sim_board_state)[i][j] != kNoPiece);
+		}
+	}
+
+	auto query_pre = [&](int lx, int rx, int ly, int ry) {
+		int ans = 0;
+		ans += prefix[rx][ry];
+		if (lx > 0)ans -= prefix[lx - 1][ry];
+		if (ly > 0)ans -= prefix[rx][ly - 1];
+		if (lx > 0 && ly > 0)ans += prefix[lx - 1][ly - 1];
+		return ans;
+		};
+
 	for (int i = 0; i < kBoardDimension; ++i) {
 		for (int j = 0; j < kBoardDimension; ++j) {
 			if (sim_board_state[i][j] != kNoPiece)continue;
-			int x = i - 4, y = j - 4;
-			x = max(x, 0); y = max(y, 0);
+			int lx = max(0, i - 4); int rx = min(i + 4, kBoardDimension - 1);
+			int ly = max(0, j - 4); int ry = min(j + 4, kBoardDimension - 1);
 			bool flag = false;
-			for (; x < kBoardDimension; ++x) {
-				for (; y < kBoardDimension; ++y) {
-					if (sim_board_state[i][j] != kNoPiece) {
-						flag = true;
-					} if (flag)break;
-				} if (flag)break;
-			}
-			if (flag) {
+			if (query_pre(lx, rx, ly, ry) > 0) {	//Near other points.
 				candidate_points.push_back({ i,j });
 			}
 		}
 	}
 
-	double this_limit = type == kBlackPiece ? -INF : INF;
+	if (candidate_points.empty()) {	//AI moves first.
+		candidate_points.push_back({ kBoardDimension / 2 + 1,kBoardDimension / 2 + 1 });
+	}
+
+	double this_limit = type == kBlackPiece ? -INF : INF;//Black -> max, White -> min
 
 	for (auto& point : candidate_points) {
 		int row = point.first;
 		int col = point.second;
-		sim_board_state[row][col] = type;
-		double ans = AlphaBeta(type == kBlackPiece ? kWhitePiece : kBlackPiece, this_limit, depth + 1, chosen_pos);
-		sim_board_state[row][col] = kNoPiece;
+		sim_board_state[row][col] = type;	//Simulate the move.
+		double ans = AlphaBeta(type == kBlackPiece ? kWhitePiece : kBlackPiece, this_limit, depth + 1, chosen_pos);	//Calculate next layer.
+		sim_board_state[row][col] = kNoPiece;//Trace back.
 
-		if (type == kBlackPiece) {//Max point.
-			if (this_limit < ans) {
+		if (type == kBlackPiece) {	//Max layer.
+			if (this_limit < ans) {	//Maximize this_limit.
 				this_limit = ans;
 				chosen_pos->row = row;
 				chosen_pos->col = col;
 			}
-			if (this_limit > limit) return this_limit;
+			if (this_limit > limit) return this_limit;	//Prune. No need to search next layer anymore.
 		}
-		else if (type == kWhitePiece) {//Min point.
-			if (this_limit > ans) {
+		else if (type == kWhitePiece) {	//Min layer.
+			if (this_limit > ans) {	//Minimize this_limit.
 				this_limit = ans;
 				chosen_pos->row = row;
 				chosen_pos->col = col;
 			}
-			if (this_limit < limit) return this_limit;
+			if (this_limit < limit) return this_limit;	//Prune. No need to search next layer anymore.
 		}
 	}
 
@@ -242,20 +258,15 @@ void AI::Init(Board* _board, PieceType _self_type) {
 	self_type = _self_type;
 }
 
-void AI::Move() {
-	std::uniform_int_distribution<> dist_int(0, 12);
+#include <iostream>
 
+void AI::Move() {
 	GridPos pos;
-	while (true) {
-		sim_board_state = board->get_board_state();
-		pos = { dist_int(generator),dist_int(generator) };
-		if (board->get_piece_type(&pos) != kNoPiece)continue;
-		board->PlacePiece(&pos, self_type);
-		sim_board_state = board->get_board_state();
-		printf("SEE BLACK\n");
-		printf("Evaluate score for black is %d\n\n", Evaluate(&sim_board_state, kBlackPiece));
-		printf("SEE WHITE\n");
-		printf("Evaluate score for white is %d\n\n", Evaluate(&sim_board_state, kWhitePiece));
-		break;
-	}
+	
+	sim_board_state = board->get_board_state();	//Initialize the simulation board.
+	printf("The best move's evaluation is %.2f.\n", AlphaBeta(self_type, self_type == kBlackPiece ? -INF : INF, 0, &pos));	//Choose the best point.
+	printf("Choose to put at {%d,%d}.\n\n", pos.row, pos.col);
+	board->PlacePiece(&pos, self_type);
+	sim_board_state = board->get_board_state();
+	std::cout << ZobristHash(&sim_board_state) << std::endl;
 }

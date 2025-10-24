@@ -1,13 +1,9 @@
 #include "Board.h"
 #include <mmsyscom.h>
 
-int Board::grid_pixel_pos(int index){
-	return kMargin + index * kGridSize;
-}
-
-Board::Board(const int board_dimension, const int board_size, const int margin, const int piece_size):
-    kBoardDimension(board_dimension),kBoardSize(board_size),kMargin(margin),kGridSize((kBoardSize-2*kMargin)*1.0/(kBoardDimension-1)),kPieceSize(piece_size){
-	printf("Board created: dimension=%d, size=%d, margin=%d, grid size=%.2f\n", kBoardDimension, kBoardSize, kMargin, kGridSize);
+Board::Board(const int board_dimension, const int board_size, const int marginx, const int marginy, const double gird_size,const int piece_size):
+    kBoardDimension(board_dimension),kBoardSize(board_size),kMarginX(marginx),kMarginY(marginy),kGridSize(gird_size),kPieceSize(piece_size){
+	printf("Board created: dimension=%d, size=%d, marginx=%d, marginy=%d, grid size=%.2f, piece size=%d\n", kBoardDimension, kBoardSize, kMarginX, kMarginY, kGridSize, kPieceSize);
 	board_state.resize(kBoardDimension, std::vector<PieceType>(kBoardDimension, kNoPiece));
 }
 
@@ -25,12 +21,12 @@ static double distance(double x1, double y1, double x2, double y2) {
 
 bool Board::Click(int x, int y, GridPos *pos) {
 	static const double offset = kGridSize * 0.3;
-	int col = (x - kMargin) / kGridSize;
-	int row = (y - kMargin) / kGridSize;
+	int col = (x - kMarginX) / kGridSize;
+	int row = (y - kMarginY) / kGridSize;
 
 	auto CheckDis = [&](int _col, int _row) {
-		double pixel_x = kMargin + _col * kGridSize;
-		double pixel_y = kMargin + _row * kGridSize;
+		double pixel_x = kMarginX + _col * kGridSize;
+		double pixel_y = kMarginY + _row * kGridSize;
 		if (distance(x, y, pixel_x, pixel_y) <= offset) {
 			pos->col = _col;
 			pos->row = _row;
@@ -86,8 +82,8 @@ static void putimagePNG(int x, int y, IMAGE* picture){
 
 void Board::PlacePiece(const GridPos *pos, PieceType type) {
 	board_state[pos->row][pos->col] = type;
-	int x = grid_pixel_pos(pos->col) - kPieceSize / 2;
-	int y = grid_pixel_pos(pos->row) - kPieceSize / 2;
+	int x = kMarginX + kGridSize * (pos->col) - kPieceSize*1.0 / 2;
+	int y = kMarginY + kGridSize * (pos->row) - kPieceSize*1.0 / 2;
 	if (type == kWhitePiece) {
 		putimagePNG(x, y, &white_piece_img);
 	}
@@ -104,8 +100,8 @@ vvector<PieceType> Board::get_board_state() {
 	return board_state;
 }
 
-void Board::DebugCircle(int col, int row) {
-	int pixel_x = kMargin + col * kGridSize;
-	int pixel_y = kMargin + row * kGridSize;
-	circle(pixel_x, pixel_y, 5);
+void Board::DebugCircle(int row, int col, int radius) {
+	int pixel_x = kMarginX + col * kGridSize;
+	int pixel_y = kMarginY + row * kGridSize;
+	circle(pixel_x, pixel_y, radius);
 }

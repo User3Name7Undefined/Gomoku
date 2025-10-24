@@ -5,10 +5,12 @@
 #include "Game.h"
 
 int main(void) {
-	AI ai(13,6);
+	AI ai(15,6);
 	Player player;
-	Board board(13, 895, 45, 61);
-	initgraph(895, 895, EX_SHOWCONSOLE);
+	Board board(15, 800, 40, 40, double(720)/14, 40);
+
+	initgraph(800, 800, EX_SHOWCONSOLE);
+
 	while (true) {
 		PlayerType first_turn = kPlayer; // or kComputer
 		Game game(&player, &ai, &board, first_turn);

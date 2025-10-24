@@ -22,16 +22,15 @@ private:
 
     const int kBoardDimension;
     const int kBoardSize;
-    const int kMargin;
+    const int kMarginX;
+    const int kMarginY;
     const double kGridSize;
 
     const int kPieceSize;
 
     vvector<PieceType> board_state;
-
-    int grid_pixel_pos(int index);
 public:
-	Board(const int board_dimension, const int board_size, const int margin, const int piece_size);
+	Board(const int board_dimension, const int board_size, const int marginx, const int marginy, const double gird_size, const int piece_size);
     void Init();
     bool Click(int x, int y, GridPos *pos);//if valid, return pos
 
@@ -39,5 +38,5 @@ public:
     PieceType get_piece_type(const GridPos *pos);
     vvector<PieceType> get_board_state();
 
-    void DebugCircle(int col, int row);
+    void DebugCircle(int col, int row, int radius);
 };
