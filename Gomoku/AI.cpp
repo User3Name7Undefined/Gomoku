@@ -21,7 +21,9 @@ const std::map<std::deque<int>, int> AI::shape_score = {
 	{ { 0,1,0,1,1,2 }, kSleepingThree }, { { 2,1,1,0,1,0 }, kSleepingThree },
 	{ { 0,1,1,0,1,2 }, kSleepingThree }, { { 2,1,0,1,1,0 }, kSleepingThree },
 	{ { 0,0,1,1,0,0 }, kActiveTwo },
+	{ { 0,0,1,1,0,2 }, kActiveTwo }, { { 2,0,1,1,0,0 }, kActiveTwo },
 	{ { 0,1,0,0,1,0 }, kActiveTwo },
+	{ { 0,0,0,1,1,2 }, kSleepingTwo }, { { 2,1,1,0,0,0 }, kSleepingTwo },
 	{ { 0,0,1,0,1,2 }, kSleepingTwo }, { { 2,1,0,1,0,0 }, kSleepingTwo },
 	{ { 0,1,0,0,1,2 }, kSleepingTwo }, { { 2,1,0,0,1,0 }, kSleepingTwo },
 	//five
@@ -99,14 +101,13 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 	if (transposition_table[type].count(hash))return transposition_table[type][hash];
 
 	int score = 0;
-	auto convert = [&](PieceType p) {
-		if (p == kNoPiece)return 0;
-		else return p == type ? 1 : 2;
+	auto convert = [&](int x,int y) {
+		if (x == -1 || y == -1 || x == kBoardDimension || y == kBoardDimension) return 2;
+		if ((*board_state)[x][y] == kNoPiece)return 0;
+		else return (*board_state)[x][y] == type ? 1 : 2;
 		};
 	auto Push = [&](std::deque<int>* seq, int x, int y) {
-		if (x == -1 || y == -1 || x == kBoardDimension || y == kBoardDimension)
-			seq->push_back(2);//Out of board, regard it as opposite.
-		else seq->push_back(convert((*board_state)[x][y]));
+		seq->push_back(convert(x, y));
 		};
 	auto Check = [&](std::deque<int> *seq, int len) {
 		switch (len) {
@@ -136,7 +137,7 @@ int AI::Evaluate(const vvector<PieceType>* board_state, PieceType type) {
 					seq_v.pop_front();
 				}
 				if (seq_h.size() < len)continue;
-
+				
 				Check(&seq_h, len);
 				Check(&seq_v, len);
 			}
@@ -247,12 +248,14 @@ void AI::Move() {
 	GridPos pos;
 	while (true) {
 		sim_board_state = board->get_board_state();
-		printf("Evaluate score for black is %d\n", Evaluate(&sim_board_state, kBlackPiece));
-		printf("Evaluate score for white is %d\n", Evaluate(&sim_board_state, kWhitePiece));
-
 		pos = { dist_int(generator),dist_int(generator) };
 		if (board->get_piece_type(&pos) != kNoPiece)continue;
 		board->PlacePiece(&pos, self_type);
+		sim_board_state = board->get_board_state();
+		printf("SEE BLACK\n");
+		printf("Evaluate score for black is %d\n\n", Evaluate(&sim_board_state, kBlackPiece));
+		printf("SEE WHITE\n");
+		printf("Evaluate score for white is %d\n\n", Evaluate(&sim_board_state, kWhitePiece));
 		break;
 	}
 }

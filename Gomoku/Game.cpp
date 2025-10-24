@@ -15,7 +15,6 @@ void Game::Start() {
 
 void Game::Run() {
     while (1) {
-		printf("Turn: %s\n", turn == kPlayer ? "Player" : "Computer");
         if (turn == kPlayer)
             player->Move();
         else
