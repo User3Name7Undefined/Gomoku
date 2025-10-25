@@ -4,23 +4,25 @@
 #include "Game.h"
 
 Game::Game(Player *p, AI *a, Board *b, PlayerType turn)
-    : player(p), ai(a), board(b), turn(turn), state(kRunning){
+    : player(p), ai(a), board(b), turn(turn){
 }
 
 void Game::Start() {
     board->Init();
 	player->Init(board, turn == kPlayer?kBlackPiece : kWhitePiece);
 	ai->Init(board, turn == kComputer?kBlackPiece : kWhitePiece);
+    printf("Player use %s\n", turn == kPlayer ? "black" : "white");
+    printf("Computer use %s\n", turn == kComputer ? "black" : "white");
 }
 
 void Game::Run() {
     while (1) {
         if (turn == kPlayer)
-            player->Move();
+            player->Move(), printf("Need move\n");
         else
             ai->Move();
 
-        if (CheckEnd())break;
+        if (board->CheckEnd()!=0)break;
 
         if (turn == kPlayer)
             turn = kComputer;
@@ -29,16 +31,12 @@ void Game::Run() {
     }
 }
 
-bool Game::CheckEnd() {
-    //if someone wins return true
-    return false;
-}
-
 void Game::End() {
-    if (state == kSomeoneWin) {
-        //announce winner
+    printf("Game over\n");
+    if (turn == kPlayer) {
+        player->Voice(kWin);
+    } else {
+        player->Voice(kLose);
     }
-    else if (state == kDraw) {
-        //announce draw
-    }
+    Sleep(5000);
 }

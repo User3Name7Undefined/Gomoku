@@ -5,14 +5,14 @@
 #include "Game.h"
 
 int main(void) {
-	AI ai(15,6);
+	AI ai(15,0);
 	Player player;
 	Board board(15, 800, 40, 40, double(720)/14, 40);
 
 	initgraph(800, 800, EX_SHOWCONSOLE);
 
 	while (true) {
-		PlayerType first_turn = kPlayer; // or kComputer
+		PlayerType first_turn = kComputer; // or kComputer
 		Game game(&player, &ai, &board, first_turn);
 		game.Start();
 		game.Run();

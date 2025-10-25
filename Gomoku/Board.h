@@ -38,5 +38,6 @@ public:
     PieceType get_piece_type(const GridPos *pos);
     vvector<PieceType> get_board_state();
 
+    int CheckEnd();
     void DebugCircle(int col, int row, int radius);
 };

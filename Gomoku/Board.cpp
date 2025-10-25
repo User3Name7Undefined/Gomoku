@@ -1,8 +1,9 @@
 #include "Board.h"
 #include <mmsyscom.h>
+#include <deque>
 
-Board::Board(const int board_dimension, const int board_size, const int marginx, const int marginy, const double gird_size,const int piece_size):
-    kBoardDimension(board_dimension),kBoardSize(board_size),kMarginX(marginx),kMarginY(marginy),kGridSize(gird_size),kPieceSize(piece_size){
+Board::Board(const int board_dimension, const int board_size, const int marginx, const int marginy, const double gird_size, const int piece_size) :
+	kBoardDimension(board_dimension), kBoardSize(board_size), kMarginX(marginx), kMarginY(marginy), kGridSize(gird_size), kPieceSize(piece_size) {
 	printf("Board created: dimension=%d, size=%d, marginx=%d, marginy=%d, grid size=%.2f, piece size=%d\n", kBoardDimension, kBoardSize, kMarginX, kMarginY, kGridSize, kPieceSize);
 	board_state.resize(kBoardDimension, std::vector<PieceType>(kBoardDimension, kNoPiece));
 }
@@ -12,6 +13,11 @@ void Board::Init() {
 	loadimage(&black_piece_img, "asset/black_piece.png");
 	loadimage(&white_piece_img, "asset/white_piece.png");
 
+	for (int i = 0; i < kBoardDimension; ++i) {
+		for (int j = 0; j < kBoardDimension; ++j) {
+			board_state[i][j] = kNoPiece;
+		}
+	}
 	putimage(0, 0, &board_img);
 }
 
@@ -98,6 +104,54 @@ PieceType Board::get_piece_type(const GridPos *pos) {
 
 vvector<PieceType> Board::get_board_state() {
 	return board_state;
+}
+
+int Board::CheckEnd() {	//0draw 1black_win 2white_win
+	//horizontal and vertical
+	auto check = [&](int& black, int& white, PieceType type) {
+		if (type == kNoPiece)black = white = 0;
+		else if (type == kBlackPiece) {
+			++black; white = 0;
+		} else {
+			black = 0; ++white;
+		}
+		};
+
+	for (int i = 0; i < kBoardDimension; ++i) {
+		int black_h = 0, black_v = 0;
+		int white_h = 0, white_v = 0;
+		for (int p = 1; p < kBoardDimension; ++p) {
+			check(black_h, white_h, board_state[i][p]);
+			check(black_v, white_v, board_state[p][i]);
+
+			if (black_h == 5 || black_v == 5) {
+				return 1;
+			} else if (white_h == 5 || white_v == 5) {
+				return 2;
+			}
+		}
+	}
+
+	//diagonal
+	vector<std::pair<int, int>>edge;
+	for (int row = kBoardDimension, col = 0; row >= 0; --row)edge.push_back({ row,col });
+	for (int row = 1, col = 0; col <= kBoardDimension; ++col) edge.push_back({ row,col });
+
+	for (auto& pair : edge) {
+		int black_m = 0, black_a = 0;
+		int white_m = 0, white_a = 0;
+		for (int x = pair.first, y = pair.second; max(x, y) < kBoardDimension; ++x, ++y) {
+			check(black_m, white_m, board_state[x][y]);
+			check(black_a, white_a, board_state[kBoardDimension - 1 - x][y]);
+
+			if (black_m == 5 || black_a == 5) {
+				return 1;
+			}else if (white_m == 5 || white_a == 5) {
+				return 2;
+			}
+		}
+	}
+	return 0;
 }
 
 void Board::DebugCircle(int row, int col, int radius) {

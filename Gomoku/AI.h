@@ -12,7 +12,7 @@ class Board;
 enum PieceType;
 
 enum Shape {
-    kFive = 50,
+    kFive = 300,
     kActiveFour = 27,
     kSleepingFour = 8,
     kActiveThree = 9,
@@ -45,7 +45,7 @@ private:
 
     std::vector<std::vector<PieceType>>sim_board_state;
     double defense_Preference=1.0; //default 1.0
-    double AlphaBeta(PieceType type, double limit, int depth, GridPos* chosen_pos);
+    std::pair<GridPos, double> AlphaBeta(PieceType type, double limit, int depth);
 
 public:
     AI(const int _board_dimension, const int search_depth);
