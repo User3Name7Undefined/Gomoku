@@ -5,7 +5,7 @@
 #include "Game.h"
 
 int main(void) {
-	AI ai(15,0);
+	AI ai(15,3);
 	Player player;
 	Board board(15, 800, 40, 40, double(720)/14, 40);
 
