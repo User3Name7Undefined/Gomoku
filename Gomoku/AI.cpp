@@ -285,8 +285,7 @@ void AI::Init(Board* _board, PieceType _self_type) {
 
 void AI::Move() {
 	sim_board_state = board->get_board_state();	//Initialize the simulation board.
-	std::pair<GridPos, double>ans = AlphaBeta(self_type, self_type == kBlackPiece ? INF : -INF, 0);
-	printf("The best move's evaluation is %.2f.\n", ans.second);	//Choose the best point.
-	printf("Choose to put at {%d,%d}.\n\n", ans.first.row,ans.first.col);
+	std::pair<GridPos, double>ans = AlphaBeta(self_type, self_type == kBlackPiece ? INF : -INF, 0);	//Choose the best point.
+	printf("Choose to put at {%d,%d}.\n", ans.first.row,ans.first.col);
 	board->PlacePiece(&(ans.first), self_type);
 }

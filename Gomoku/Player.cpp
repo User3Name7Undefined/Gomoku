@@ -29,7 +29,6 @@ void Player::Voice(VoiceType voice){
 		mciSendString("play asset/player_game_start.mp3", NULL, 0, NULL);
 		break;
 	case kPlacePiece: {
-		printf("Say something.\n");
 		int chosen = rand() % 5;
 		switch (chosen) {
 		case 0:mciSendString("play asset/player_battle1.mp3", NULL, 0, NULL); break;
